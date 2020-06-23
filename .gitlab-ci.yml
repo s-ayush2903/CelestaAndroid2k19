@@ -64,17 +64,15 @@ before_script:
 
 # Check linting
 lintDebug:
- only: 
- - [merge_requests]
   interruptible: true
   stage: build
   script:
     - ./gradlew -Pci --console=plain :app:lintDebug -PbuildDir=lint
-    
+  only: 
+  - [merge_requests]  
+
 # Make Project
 assembleDebug:
- only: 
- - [merge_requests]
   interruptible: true
   stage: build
   script:
@@ -84,23 +82,25 @@ assembleDebug:
     paths:
       - app/build/outputs/
       - req.json
+  only: 
+  - [merge_requests]  
 
 # Run all tests, if any fails, interrupt the pipeline(fail it)
 debugTests:
- only: 
- - [merge_requests]
   interruptible: true
   stage: test
   script:
     - ./gradlew -Pci --console=plain :app:testDebug
+  only: 
+  - [merge_requests]  
 
 # Deployment to appetize.io, go through readme for more info
 deploy:
- only: 
- - [merge_requests]
   interruptible: true
   stage: deploy
   dependencies:
     - assembleDebug
   script:
     - 'curl -s -X POST -H "Content-Type: application/json" -d @req.json https://$APPETIZE_API@api.appetize.io/v1/apps/$APPETIZE_KEY > response.json'
+  only: 
+  - [merge_requests]  
