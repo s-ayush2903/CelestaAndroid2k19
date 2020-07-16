@@ -4,7 +4,6 @@
 # Read more about this script on this blog post https://about.gitlab.com/2018/10/24/setting-up-gitlab-ci-for-android-projects/, by Jason Lenny
 # If you are interested in using Android with FastLane for publishing take a look at the Android-Fastlane template.
 
-
 # This tells GitLab Runners (the things that are executing our build) what Docker image to use
 image: openjdk:8-jdk
 # This Docker image (openjdk:8-jdk) works perfectly for our use case, as it is just a barebones installation of Debian with Java pre-installed.
@@ -69,7 +68,9 @@ lintDebug:
   stage: build
   script:
     - ./gradlew -Pci --console=plain :app:lintDebug -PbuildDir=lint
-    
+  only: 
+  - merge_requests  
+
 # Make Project
 assembleDebug:
   interruptible: true
@@ -81,6 +82,8 @@ assembleDebug:
     paths:
       - app/build/outputs/
       - req.json
+  only: 
+  - merge_requests  
 
 # Run all tests, if any fails, interrupt the pipeline(fail it)
 debugTests:
@@ -88,6 +91,8 @@ debugTests:
   stage: test
   script:
     - ./gradlew -Pci --console=plain :app:testDebug
+  only: 
+  - merge_requests  
 
 # Deployment to appetize.io, go through readme for more info
 deploy:
@@ -97,3 +102,5 @@ deploy:
     - assembleDebug
   script:
     - 'curl -s -X POST -H "Content-Type: application/json" -d @req.json https://$APPETIZE_API@api.appetize.io/v1/apps/$APPETIZE_KEY > response.json'
+  only: 
+  - merge_requests  
