@@ -36,7 +36,7 @@ jobs:
      - stage: test
        name: "Run All Tests"
        script:
-          ./gradlew -Pci --console=plain :app:testDebug
+          ./gradlew -Pci --console=plain :app:testDebugUnitTest
 
     # Deployment to appetize.io, go through readme for more info
      - stage: deploy
